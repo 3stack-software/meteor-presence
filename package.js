@@ -1,6 +1,6 @@
 Package.describe({
   name: '3stack:presence',
-  version: '1.0.0',
+  version: '1.0.1',
   summary: 'Track who\' online on your app, and what they\'re up to',
   git: 'https://github.com/3stack-software/meteor-presence',
   documentation: 'README.md'
@@ -13,6 +13,7 @@ Package.onUse(function (api) {
   api.export('presences');
 
   api.use('tracker', 'client');
+  api.use('random', 'server');
   api.use('mongo');
 
   api.use('coffeescript');
