@@ -38,7 +38,7 @@ To use that presence, you can inspect the `presences` collection in the client.
 If you want to track more than just what a user is doing (but instead what they are up to), you can set a custom state function. (The default state function return just `'online'`):
 
 ```js
-Meteor.Presence.configure({
+Presence.configure({
   state: function() {
     return {
       online: true,
@@ -55,7 +55,7 @@ Of course presence will call your function reactively, so everyone will know as 
 If you want the 'lastSeen' to update at a fixed interval, pass a heartbeat value
 
 ```js
-Meteor.Presence.configure({
+Presence.configure({
   heartbeat: 60000 // 60s
 });
 ```
@@ -65,26 +65,27 @@ Meteor.Presence.configure({
 You can disable reactivity on the state function, useful when using a heartbeat only.
 
 ```js
-Meteor.Presence.configure({
+Presence.configure({
   reactive: false,
   state: myExtremelyVolatileFunction
 });
 ```
 
-### Isolate State
+### Emboxed state
 
-You can ensure that the reactive state function is only called when it's output is changed, by enabling isolate: true (requires isolate-value)
+You can ensure that the reactive state function is only called when it's output is changed by wrapping it in an embox.
+
+include the `3stack:embox-value` package and wrap your state function:
 
 ```js
-Meteor.Presence.configure({
-  isolate: true,
-  state: function(){
+Presence.configure({
+  state: emboxValue(function(){
     if (Session.get('myValue') > 10){
       return 'good';
     } else {
       return 'bad'
     }
-  }
+  })
 });
 ```
 
@@ -96,7 +97,7 @@ You'll need to enable a server-heartbeat to clear presences from servers that do
 
 ```js
 if (Meteor.isServer){
-  Meteor.Presence.configure({
+  Presence.configure({
     heartbeat: 600000, // 10 minutes
     timeout: 1800000 // 30 minutes
   });
