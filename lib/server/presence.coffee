@@ -8,6 +8,7 @@ Meteor.onConnection (connection)->
   presences.insert
     _id: connection.sessionKey
     serverId: Presence.serverId
+    clientAddress: connection.clientAddress
     status: 'connecting'
     connectedAt: now
     lastSeen: now
@@ -33,10 +34,17 @@ Meteor.publish null, ->
     $set:
       status: 'connected'
 
+  hashedToken = null
+  if @userId?
+    hashedToken = Accounts._getLoginToken(@connection.id)
+    # Use user-defined digest if option provided
+    hashedToken = Presence.hash(@userId, hashedToken)
+
   presences.update
     _id: @connection.sessionKey
   ,
     $set:
+      loginToken: hashedToken
       userId: @userId
       lastSeen: new Date()
   return

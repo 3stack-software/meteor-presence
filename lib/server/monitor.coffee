@@ -4,6 +4,8 @@ class ServerMonitor
     @options =
       heartbeat: false
       timeout: false
+      hash: null
+      salt: ""
     @heartbeat = null
     @started = false
     Meteor.startup(@onStartup)
@@ -57,5 +59,11 @@ class ServerMonitor
 
     @heartbeat.tock()
     return
+
+  hash:(userId, value)->
+    if @options.hash != null
+      return @options.hash(userId + @options.salt, value)
+    else
+      return value
 
 @ServerMonitor = ServerMonitor
