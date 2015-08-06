@@ -10,7 +10,7 @@ A very simple presence package, to track who's online, etc.
 
 `3stack:presence-colours` - Assigns a colour to each distinct user in the `presences` collection
 
-`3stack:presence-single-session' - Detects concurrent usage of a user with different login tokens;
+`3stack:presence-single-session` - Detects concurrent usage of a user with different login tokens;
 
 ## Usage
 
