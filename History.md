@@ -1,3 +1,6 @@
+## v1.0.4, 2015-Oct-30
+
+ * Ensure `this.ready()` is called from publication. (Thanks @mquandalle)
 
 ## v1.0.3, 2015-Feb-19
 
