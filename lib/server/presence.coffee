@@ -47,6 +47,7 @@ Meteor.publish null, ->
       loginToken: hashedToken
       userId: @userId
       lastSeen: new Date()
+  @ready()
   return
 
 # allow the client to provide stateful information about itself
