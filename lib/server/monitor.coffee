@@ -1,11 +1,14 @@
+DEFAULT_TTL = 5*60*1000
+DEFAULT_HEARTBEAT = 60*1000
+
 class ServerMonitor
   constructor: ->
     @serverId = Random.id()
+    console.log("Presence started serverId=#{@serverId}")
     @options =
-      heartbeat: false
-      timeout: false
-      hash: null
-      salt: ""
+      ttl: null
+      heartbeatInterval: null
+      checksum: null
     @heartbeat = null
     @started = false
     Meteor.startup(@onStartup)
@@ -15,54 +18,32 @@ class ServerMonitor
       throw new Error("Must configure Presence on the server before Meteor.startup()")
     _.extend(@options, options)
 
-    if @options.heartbeat == false
-      @heartbeat = null
-    else
-      if !@options.timeout
-        @options.timeout = @options.heartbeat * 5
-      @heartbeat = new Heartbeat(@options.heartbeat)
+    @heartbeat = new Heartbeat(@options.heartbeatInterval ? DEFAULT_HEARTBEAT)
     return
 
-  generateSessionKey: -> "#{@serverId}-#{Random.id()}"
+  getTtl: -> new Date(+(new Date()) + (@options.ttl ? DEFAULT_TTL))
 
   onStartup: =>
     @started = true
-    unless @heartbeat?
-      # when not using server heartbeat - just clear presences on startup
-      presences.remove({})
-    else
-      @serverHeartbeats = new Mongo.Collection('presence.servers')
-
-      @serverHeartbeats.insert
-        _id: @serverId
-        lastSeen: new Date()
-
-      @heartbeat.start(@pulse)
+    @heartbeat.start(@onBeat)
     return
 
-  pulse: =>
-    verify = @serverHeartbeats.upsert
-      _id: @serverId
-    ,
-      $set:
-        lastSeen: new Date()
-
-    #XX If this server timed out - we need to re-compute the sessionKeys for each connection
-    if verify.insertedId?
-      console.warn("Presence: Server Timeout - Presence lost for current connections")
-
-    @serverHeartbeats.remove(lastSeen: $lt: new Date(new Date().getTime() - @options.timeout))
-    serverIds = _.pluck(@serverHeartbeats.find({}).fetch(), "_id")
-    presences.remove
-      serverId:
-        $nin: serverIds
-
+  onBeat: =>
+    presences.update({
+      serverId: @serverId
+    }, {
+      $set: {
+        ttl: @getTtl()
+      }
+    }, {
+      multi: true
+    })
     @heartbeat.tock()
     return
 
-  hash:(userId, value)->
-    if @options.hash != null
-      return @options.hash(userId + @options.salt, value)
+  checksum: (userId, value)->
+    if @options.checksum?
+      return @options.checksum(userId, value)
     else
       return value
 
