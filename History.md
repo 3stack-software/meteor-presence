@@ -1,3 +1,6 @@
+## v1.1.1, 2017-Jul-09
+ * Fix issue when `Presence.configure()` is not called
+
 ## v1.1.0, 2017-Jul-07
 
  * Changed server API's for `Presence.configure()`

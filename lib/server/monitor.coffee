@@ -9,7 +9,7 @@ class ServerMonitor
       ttl: null
       heartbeatInterval: null
       checksum: null
-    @heartbeat = null
+    @heartbeat = new Heartbeat(DEFAULT_HEARTBEAT)
     @started = false
     Meteor.startup(@onStartup)
 
@@ -18,7 +18,7 @@ class ServerMonitor
       throw new Error("Must configure Presence on the server before Meteor.startup()")
     _.extend(@options, options)
 
-    @heartbeat = new Heartbeat(@options.heartbeatInterval ? DEFAULT_HEARTBEAT)
+    @heartbeat.interval = @options.heartbeatInterval ? DEFAULT_HEARTBEAT
     return
 
   getTtl: -> new Date(+(new Date()) + (@options.ttl ? DEFAULT_TTL))
