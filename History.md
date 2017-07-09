@@ -1,6 +1,11 @@
 ## v1.1.0, 2017-Jul-07
 
- * Changed server API's for `Presence.configure`
+ * Changed server API's for `Presence.configure()`
+ * Supports presence on multiple instances by default.
+ * Recommended: Setup an TTL index so that presences expire if a server dies unexpectedly.
+    ```js
+    db.presences.createIndex({ttl: 1}, {expireAfterSeconds: 0})
+    ```
 
 ## v1.0.4, 2015-Oct-30
 
