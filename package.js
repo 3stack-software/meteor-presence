@@ -1,6 +1,6 @@
 Package.describe({
   name: '3stack:presence',
-  version: '1.1.0',
+  version: '1.1.1',
   summary: 'Track who\' online on your app, and what they\'re up to',
   git: 'https://github.com/3stack-software/meteor-presence',
   documentation: 'README.md'
