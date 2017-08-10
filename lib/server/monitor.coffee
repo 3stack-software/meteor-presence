@@ -29,16 +29,18 @@ class ServerMonitor
     return
 
   onBeat: =>
-    presences.update({
-      serverId: @serverId
-    }, {
-      $set: {
-        ttl: @getTtl()
-      }
-    }, {
-      multi: true
-    })
-    @heartbeat.tock()
+    try
+      presences.update({
+        serverId: @serverId
+      }, {
+        $set: {
+          ttl: @getTtl()
+        }
+      }, {
+        multi: true
+      })
+    finally
+      @heartbeat.tock()
     return
 
   checksum: (userId, value)->
